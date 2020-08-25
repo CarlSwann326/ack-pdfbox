@@ -17,18 +17,16 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 
 
-public class FieldTranslator {
+public class FieldsTranslator {
   public PDDocument pdf;
 
   public String sourcePdfPath;
   public String outputPdfPath;
-  public String fieldName;
   public String translateX;
   public String translateY;
 
-  public FieldTranslator(String sourcePdfPath, String outputPdfPath, String fieldName, String translateX, String translateY){
+  public FieldsTranslator(String sourcePdfPath, String outputPdfPath, String translateX, String translateY){
     this.sourcePdfPath = sourcePdfPath;
-    this.fieldName = fieldName;
     this.translateX = translateX;
     this.translateY = translateY;
     this.outputPdfPath = outputPdfPath;
@@ -51,9 +49,15 @@ public class FieldTranslator {
 
 
   private void processField(PDField field) throws IOException {
-    String fullName = field.getFullyQualifiedName();
+    String partialName = field.getPartialName();
 
-    if (this.fieldName.equals(fullName)) {
+    if (field instanceof PDNonTerminalField) {
+      // this field has children
+      for (PDField child : ((PDNonTerminalField)field).getChildren()) {
+        processField(child);
+      }
+    } else {
+      // this field has no children
       PDRectangle rectangle = field.getWidgets().get(0).getRectangle();
       rectangle.setLowerLeftX(rectangle.getLowerLeftX() + Float.parseFloat(this.translateX));
       rectangle.setLowerLeftY(rectangle.getLowerLeftY() + Float.parseFloat(this.translateY));
@@ -62,12 +66,6 @@ public class FieldTranslator {
       field.getWidgets().get(0).setRectangle(rectangle);
     }
 
-
-    if (field instanceof PDNonTerminalField) {
-      // this field has children
-      for (PDField child : ((PDNonTerminalField)field).getChildren()) {
-        processField(child);
-      }
-    }
+    field.setPartialName(partialName.replaceAll(this.translateX, this.translateY));
   }
 }
