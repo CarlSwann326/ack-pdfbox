@@ -17,21 +17,30 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 
 
-public class FieldTranslator {
+public class FieldScaler {
   public PDDocument pdf;
 
   public String sourcePdfPath;
   public String outputPdfPath;
   public String fieldName;
-  public String translateX;
-  public String translateY;
+  public String translationDefinition;
 
-  public FieldTranslator(String sourcePdfPath, String outputPdfPath, String fieldName, String translateX, String translateY){
+  public String lowerLeftXTranslation;
+  public String lowerLeftYTranslation;
+  public String upperRightXTranslation;
+  public String upperRightYTranslation;
+
+  public FieldScaler(String sourcePdfPath, String outputPdfPath, String fieldName, String translationDefinition){
     this.sourcePdfPath = sourcePdfPath;
     this.fieldName = fieldName;
-    this.translateX = translateX;
-    this.translateY = translateY;
+    this.translationDefinition = translationDefinition;
     this.outputPdfPath = outputPdfPath;
+
+    String[] points = translationDefinition.split(",");
+    this.lowerLeftXTranslation = points[0];
+    this.lowerLeftYTranslation = points[1];
+    this.upperRightXTranslation = points[2];
+    this.upperRightYTranslation = points[3];
   }
 
   public void execute() throws IOException {
@@ -55,10 +64,10 @@ public class FieldTranslator {
 
     if (this.fieldName.equals(fullName)) {
       PDRectangle rectangle = field.getWidgets().get(0).getRectangle();
-      rectangle.setLowerLeftX(rectangle.getLowerLeftX() + Float.parseFloat(this.translateX));
-      rectangle.setLowerLeftY(rectangle.getLowerLeftY() + Float.parseFloat(this.translateY));
-      rectangle.setUpperRightX(rectangle.getUpperRightX() + Float.parseFloat(this.translateX));
-      rectangle.setUpperRightY(rectangle.getUpperRightY() + Float.parseFloat(this.translateY));
+      rectangle.setLowerLeftX(rectangle.getLowerLeftX() + Float.parseFloat(this.lowerLeftXTranslation));
+      rectangle.setLowerLeftY(rectangle.getLowerLeftY() + Float.parseFloat(this.lowerLeftYTranslation));
+      rectangle.setUpperRightX(rectangle.getUpperRightX() + Float.parseFloat(this.upperRightXTranslation));
+      rectangle.setUpperRightY(rectangle.getUpperRightY() + Float.parseFloat(this.upperRightYTranslation));
       field.getWidgets().get(0).setRectangle(rectangle);
     }
 

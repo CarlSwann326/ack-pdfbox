@@ -9,6 +9,10 @@ import com.ackpdfbox.app.FieldFiller;
 import com.ackpdfbox.app.FieldCopier;
 import com.ackpdfbox.app.FieldRenamer;
 import com.ackpdfbox.app.FieldTranslator;
+import com.ackpdfbox.app.FieldsTranslator;
+import com.ackpdfbox.app.FieldScaler;
+import com.ackpdfbox.app.FieldPositionDeltaMapGenerator;
+import com.ackpdfbox.app.FieldPositionDeltaMapTranslator;
 
 import com.ackpdfbox.app.Decrypt;
 import com.ackpdfbox.app.Encrypt;
@@ -96,12 +100,48 @@ public class App{
           }
           break;
 
+        case "scale-field":
+          if(args.length < 5){
+            scaleFieldUsage();
+          }else{
+            FieldScaler fieldTranslator = new FieldScaler(args[1], args[2], args[3], args[4]);
+            fieldTranslator.execute();
+          }
+          break;
+
+        case "translate-field":
+          if(args.length < 6){
+            translateFieldUsage();
+          }else{
+            FieldTranslator fieldTranslator = new FieldTranslator(args[1], args[2], args[3], args[4], args[5]);
+            fieldTranslator.execute();
+          }
+          break;
+
+        case "generate-field-position-delta-map":
+          if(args.length < 4){
+            generateFieldPositionDeltaMapUsage();
+          }else{
+            FieldPositionDeltaMapGenerator fieldPositionDeltaMapGenerator = new FieldPositionDeltaMapGenerator(args[1], args[2], args[3]);
+            fieldPositionDeltaMapGenerator.execute();
+          }
+          break;
+
         case "translate-fields":
           if(args.length < 5){
             translateFieldsUsage();
           }else{
-            FieldTranslator fieldTranslator = new FieldTranslator(args[1], args[2], args[3], args[4]);
+            FieldsTranslator fieldTranslator = new FieldsTranslator(args[1], args[2], args[3], args[4]);
             fieldTranslator.execute();
+          }
+          break;
+
+        case "translate-fields-from-delta-map":
+          if(args.length < 4){
+            translateFieldsFromDeltaMapUsage();
+          }else{
+            FieldPositionDeltaMapTranslator fieldPositionDeltaMapTranslator = new FieldPositionDeltaMapTranslator(args[1], args[2], args[3]);
+            fieldPositionDeltaMapTranslator.execute();
           }
           break;
 
@@ -181,6 +221,22 @@ public class App{
 
   private static void renameFieldsUsage(){
     System.err.println("usage: rename-fields <source-pdf-path> <out-path> <source-string> <target-string>");
+  }
+
+  private static void scaleFieldUsage(){
+    System.err.println("usage: scale-field <source-pdf-path> <out-path> <field-name> <lowerLeftX,lowerLeftY,upperRightX,upperRightY>");
+  }
+
+  private static void generateFieldPositionDeltaMapUsage(){
+    System.err.println("usage: generate-field-position-delta-map <source-pdf-path> <target-pdf-path> <out-path>");
+  }
+
+  private static void translateFieldsFromDeltaMapUsage(){
+    System.err.println("usage: translate-fields-from-delta-map <source-pdf-path> <delta-map-path> <out-path>");
+  }
+
+  private static void translateFieldUsage(){
+    System.err.println("usage: translate-field <source-pdf-path> <out-path> <field-name> <translate-x> <translate-y>");
   }
 
   private static void translateFieldsUsage(){
