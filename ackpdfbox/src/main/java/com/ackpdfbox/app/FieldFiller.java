@@ -42,7 +42,7 @@ public class FieldFiller{
     this.flatten = false;
   }
 
-  public String getJsonFileString() throws IOException{
+  public String getJsonFileString() throws IOException {
     byte[] encoded = Files.readAllBytes( Paths.get(this.jsonPath) );
     return new String(encoded, Charset.forName("UTF-8"));
   }
@@ -60,13 +60,13 @@ public class FieldFiller{
 
     for(JsonElement field : jarr){
       JsonObject fObject = field.getAsJsonObject();
-     
+
       String fullname = fObject.get("fullyQualifiedName").getAsString();
       JsonElement value = fObject.get("value");
       JsonElement remove = fObject.get("remove");
 
       //System.out.println(fullname+"="+value);
-      
+
       PDField pdField = acroForm.getField(fullname);
       Boolean isReadOnly = pdField.isReadOnly();
       if(isReadOnly==true){
@@ -95,11 +95,11 @@ public class FieldFiller{
         imageAdder.pdf = pdf;
         imageAdder.setImageByBase64String( base64String );
         imageAdder.setPageNumber( fObject.get("page").getAsInt() );
-        
+
         JsonObject cords = fObject.get("cords").getAsJsonObject();
         float x = Float.parseFloat( cords.get("x").getAsString() );
         float y = Float.parseFloat( cords.get("y").getAsString() );
-        
+
         JsonElement forceWidthHeight = base64Overlay.get("forceWidthHeight");
         if(forceWidthHeight!=null && forceWidthHeight.getAsBoolean()==true){
           float width = Float.parseFloat( cords.get("width").getAsString() );
@@ -131,14 +131,14 @@ public class FieldFiller{
     pdf.save(this.outPath);
     pdf.close();
   }
-  
+
   private void fillRadioButton(PDRadioButton pDCheckBox, JsonElement value) throws IOException{
     if(value==null){
       return;
     }
 
     String valueString = value.getAsString();
-    
+
     Boolean checkedByValue = false;
     java.util.Set<String> onValues = pDCheckBox.getOnValues();
     for(String checkValue : onValues){
@@ -152,7 +152,7 @@ public class FieldFiller{
     if(!checkedByValue){
       Boolean checkOff = valueString.toLowerCase().equals("off");
       Boolean checkOn = valueString.length()>0 && !checkOff;
-      
+
       if(checkOff){
         pDCheckBox.setValue("Off");
       }else if(checkOn){
@@ -167,7 +167,7 @@ public class FieldFiller{
     }
 
     String valueString = value.getAsString();
-    
+
     Boolean checkedByValue = false;
     java.util.Set<String> onValues = pDCheckBox.getOnValues();
     for(String checkValue : onValues){
@@ -180,7 +180,7 @@ public class FieldFiller{
     if(!checkedByValue){
       Boolean checkOff = valueString.toLowerCase().equals("off");
       Boolean checkOn = valueString.length()>0 && !checkOff;
-      
+
       if(checkOff){
         pDCheckBox.unCheck();
       }else if(checkOn){
